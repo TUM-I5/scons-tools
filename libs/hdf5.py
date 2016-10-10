@@ -35,39 +35,54 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 import utils.checks
+import utils.compiler
+import utils.pkgconfig
 
-def CheckPkgconfig(context, lib, opt):
-	"""Run pkg-config and return parsed flags"""
+def find(env, required=True, parallel=False, hl=True, **kw):
+	if env.GetOption('help') or env.GetOption('clean'):
+		return
 
-	context.Message('Checking whether pkg-config knows ' + lib + '... ')
+	conf = env.Configure()
+	utils.checks.addDefaultTests(conf)
 
+	# Find h5cc or h5pcc
+	h5ccs = ['h5cc', 'h5pcc']
+	if parallel:
+		# Change order if parallel program is requested
+		h5ccs[0], h5ccs[1] = h5ccs[1], h5ccs[0]
+
+	for h5cc in h5ccs:
+		h5cc = conf.CheckProg(h5cc)
+		if h5cc:
+			break
+
+	if not h5cc:
+		if required:
+			utils.checks.error('scons: Cannot find h5cc or h5pcc: Make sure the path to the HDF5 library is correct')
+			env.Exit(1)
+		else:
+			conf.Finish()
+			return False
+
+
+	# Parse the output from the h5cc compiler wrapper
 	def parse_func(env, cmd):
+		# remove the compiler
+		cmd = cmd.partition(' ')[2]
+		# remove unknown arguments
+		cmd = utils.compiler.removeUnknownOptions(cmd)
 		return env.ParseFlags(cmd)
+	flags = env.ParseConfig([h5cc, '-show', '-shlib'], parse_func)
 
-	try:
-		flags = context.env.ParseConfig([context.env['PKG_CONFIG'], '--silence-errors'] + opt + [lib], parse_func)
-	except OSError:
-		flags = False
+	utils.pkgconfig.appendPathes(env, flags)
 
-	context.Result(bool(flags))
-	return flags
+	if not conf.CheckLibWithHeader(flags['LIBS'][0], 'hdf5.h', 'c', extra_libs=flags['LIBS'][1:]):
+		if required:
+			utils.checks.error('Could not find the HDF5 library')
+			env.Exit(1)
+		else:
+			conf.Finish()
+			return False
 
-
-def parse(conf, lib, opt = ['--libs']):
-	"""Parses and returns options from pkg-config"""
-
-	if 'PKG_CONFIG' not in conf.env:
-		conf.AddTest('CheckProg', utils.checks.CheckProg)
-		conf.env['PKG_CONFIG'] = conf.CheckProg('pkg-config')
-
-	if not conf.env['PKG_CONFIG']:
-		return None
-
-	conf.AddTest('CheckPkgconfig', CheckPkgconfig)
-	return conf.CheckPkgconfig(lib, opt)
-
-def appendPathes(env, flags):
-	"""Add pathes found with pkgconfig or similar tools"""
-
-	env.AppendUnique(LIBPATH=flags['LIBPATH'])
-	env.AppendUnique(CPPPATH=flags['CPPPATH'])
+	conf.Finish()
+	return True

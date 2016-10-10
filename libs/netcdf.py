@@ -34,6 +34,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+import utils.checks
 import utils.pkgconfig
 
 def find(env, required=True, parallel=False, **kw):
@@ -41,24 +42,27 @@ def find(env, required=True, parallel=False, **kw):
 		return
 
 	conf = env.Configure()
+	utils.checks.addDefaultTests(conf)
 
 	flags = utils.pkgconfig.parse(conf, 'netcdf')
 	if not flags:
 		if required:
-			print 'Could not find netcdf with pkg-config. Make sure pkg-config is installed and PKG_CONFIG_PATH contains netcdf.pc'
+			utils.checks.error('Could not find netcdf with pkg-config: Make sure pkg-config is installed and PKG_CONFIG_PATH contains netcdf.pc')
 			env.Exit(1)
 		else:
 			conf.Finish()
 			return False
+
+	utils.pkgconfig.appendPathes(env, flags)
 
 	if parallel:
 		header = 'netcdf_par.h'
 	else:
 		header = 'netcdf.h'
 
-	if not conf.CheckLibWithHeader('netcdf', header, 'c'):
+	if not conf.CheckLibWithHeader(flags['LIBS'][0], header, 'c'):
 		if required:
-			print 'Could not find netCDF!'
+			utils.checks.error('Could not find netCDF')
 			env.Exit(1)
 		else:
 			conf.Finish()

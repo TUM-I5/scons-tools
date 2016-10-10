@@ -34,40 +34,31 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-import utils.checks
+import SCons
 
-def CheckPkgconfig(context, lib, opt):
-	"""Run pkg-config and return parsed flags"""
+def removeUnknownOptions(args):
+	"""Removes compiler options unknown to SCons from the list of arguments"""
 
-	context.Message('Checking whether pkg-config knows ' + lib + '... ')
+	if not SCons.Util.is_List(args):
+		args = args.split()
 
-	def parse_func(env, cmd):
-		return env.ParseFlags(cmd)
+	# TODO extend these if neseccary
+	prefixOptions = ['-I', '-D', '-L', '-l']
+	def isPrefixOption(arg):
+		for o in prefixOptions:
+			if arg.startswith(o):
+				return True
 
-	try:
-		flags = context.env.ParseConfig([context.env['PKG_CONFIG'], '--silence-errors'] + opt + [lib], parse_func)
-	except OSError:
-		flags = False
-
-	context.Result(bool(flags))
-	return flags
+		return False
 
 
-def parse(conf, lib, opt = ['--libs']):
-	"""Parses and returns options from pkg-config"""
+	cleaned_args = list(args) # copy all
+	for i in xrange(len(args) - 1, -1, -1): # iterate backwards
+		if isPrefixOption(args[i]):
+			continue
 
-	if 'PKG_CONFIG' not in conf.env:
-		conf.AddTest('CheckProg', utils.checks.CheckProg)
-		conf.env['PKG_CONFIG'] = conf.CheckProg('pkg-config')
+		# Run other tests here
 
-	if not conf.env['PKG_CONFIG']:
-		return None
+		del cleaned_args[i]
 
-	conf.AddTest('CheckPkgconfig', CheckPkgconfig)
-	return conf.CheckPkgconfig(lib, opt)
-
-def appendPathes(env, flags):
-	"""Add pathes found with pkgconfig or similar tools"""
-
-	env.AppendUnique(LIBPATH=flags['LIBPATH'])
-	env.AppendUnique(CPPPATH=flags['CPPPATH'])
+	return ' '.join(cleaned_args)

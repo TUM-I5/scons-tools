@@ -36,6 +36,33 @@
 
 import SCons
 
+def _lang2name(lang):
+	"""Unify language name"""
+	if not lang or lang in ["C", "c"]:
+		return "C"
+	if lang in ["c++", "C++", "cpp", "CXX", "cxx"]:
+		return "C++"
+
+	return None
+
+
+def _libInEnv(libs, env):
+	"""Checks if a libraries is defined in the current environment"""
+	try:
+		for l in libs:
+			if l in env['LIBS']:
+				return l
+	except KeyError:
+		pass
+
+	return False
+
+def display(msg):
+	SCons.Util.DisplayEngine()('scons: '+msg)
+
+def error(msg):
+	display('error: '+msg)
+
 def CheckProg(context, prog_name):
 	"""
 	This function is from the latest version of SCons to support
@@ -51,11 +78,43 @@ def CheckProg(context, prog_name):
 
 	return path
 
+def CheckLib(context, library = None, symbol = "main",
+		header = None, language = None, extra_libs = None,
+		autoadd = 1):
+	"""
+	This function is from SCons but extended with additional flags, e.g.
+	the extra_libs and avoids duplicate loading of libraries.
+	A test for a library. See also CheckLibWithHeader.
+	Note that library may also be None to test whether the given symbol
+	compiles without flags.
+	"""
+
+	if library == []:
+		library = [None]
+
+	if not SCons.Util.is_List(library):
+		library = [library]
+
+	if symbol == 'main':
+		found = _libInEnv(library, context.env)
+		if found:
+			context.Message("Checking for %s library %s... " % (_lang2name(language), found))
+			context.Result(True)
+			return True
+
+	# ToDo: accept path for the library
+	res = SCons.Conftest.CheckLib(context, library, symbol, header = header,
+		language = language, extra_libs = extra_libs, autoadd = autoadd)
+	context.did_show_result = 1
+	return not res
+
+
+
 def CheckLibWithHeader(context, libs, header, language,
 		call = None, extra_libs = None, autoadd = 1):
 	"""
 	This function is from SCons but extended with additional flags, e.g.
-	the extra_libs.
+	the extra_libs and avoids duplicate loading of libraries.
 	Another (more sophisticated) test for a library.
 	Checks, if library and header is available for language (may be 'C'
 	or 'CXX'). Call maybe be a valid expression _with_ a trailing ';'.
@@ -64,14 +123,29 @@ def CheckLibWithHeader(context, libs, header, language,
 	"""
 	prog_prefix, dummy = \
 		SCons.SConf.createIncludesFromHeaders(header, 0)
+
 	if libs == []:
 		libs = [None]
 
 	if not SCons.Util.is_List(libs):
 		libs = [libs]
 
+	found = _libInEnv(libs, context.env)
+	if found:
+		context.Message("Checking for %s library %s... " % (_lang2name(language), found))
+		context.Result(True)
+		return True
+
 	res = SCons.Conftest.CheckLib(context, libs, None, prog_prefix,
 		call = call, language = language, extra_libs = extra_libs,
 		autoadd = autoadd)
 	context.did_show_result = 1
 	return not res
+
+
+def addDefaultTests(conf):
+	conf.AddTests({
+		'CheckProg': CheckProg,
+		'CheckLib': CheckLib,
+		'CheckLibWithHeader': CheckLibWithHeader
+		})
