@@ -58,7 +58,7 @@ def find(env, required=True, parallel=False, hl=True, **kw):
 
 	if not h5cc:
 		if required:
-			utils.checks.error('scons: Cannot find h5cc or h5pcc: Make sure the path to the HDF5 library is correct')
+			utils.checks.error('Cannot find h5cc or h5pcc: Make sure the path to the HDF5 library is correct')
 			env.Exit(1)
 		else:
 			conf.Finish()

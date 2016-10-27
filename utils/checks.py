@@ -82,12 +82,13 @@ def CheckLib(context, library = None, symbol = "main",
 		header = None, language = None, extra_libs = None,
 		autoadd = 1):
 	"""
-	This function is from SCons but extended with additional flags, e.g.
-	the extra_libs and avoids duplicate loading of libraries.
+	This function is from SCons but extended with additional features.
 	A test for a library. See also CheckLibWithHeader.
 	Note that library may also be None to test whether the given symbol
 	compiles without flags.
 	"""
+
+	# TODO check for CONF_PREFIX
 
 	if library == []:
 		library = [None]
@@ -108,13 +109,10 @@ def CheckLib(context, library = None, symbol = "main",
 	context.did_show_result = 1
 	return not res
 
-
-
 def CheckLibWithHeader(context, libs, header, language,
 		call = None, extra_libs = None, autoadd = 1):
 	"""
-	This function is from SCons but extended with additional flags, e.g.
-	the extra_libs and avoids duplicate loading of libraries.
+	This function is from SCons but extended with additional features.
 	Another (more sophisticated) test for a library.
 	Checks, if library and header is available for language (may be 'C'
 	or 'CXX'). Call maybe be a valid expression _with_ a trailing ';'.
@@ -123,6 +121,9 @@ def CheckLibWithHeader(context, libs, header, language,
 	"""
 	prog_prefix, dummy = \
 		SCons.SConf.createIncludesFromHeaders(header, 0)
+
+	if 'CONF_PREFIX' in context.env:
+		prog_prefix = context.env['CONF_PREFIX'] + prog_prefix
 
 	if libs == []:
 		libs = [None]
