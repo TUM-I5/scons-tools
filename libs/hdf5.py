@@ -5,7 +5,7 @@
 #
 # @author Sebastian Rettenberger <sebastian.rettenberger@tum.de>
 #
-# @copyright Copyright (c) 2016, Technische Universitaet Muenchen.
+# @copyright Copyright (c) 2016-2017, Technische Universitaet Muenchen.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -38,10 +38,7 @@ import utils.checks
 import utils.compiler
 import utils.pkgconfig
 
-def find(env, required=True, parallel=False, hl=True, **kw):
-	if env.GetOption('help') or env.GetOption('clean'):
-		return
-
+def find(env, required=True, parallel=False, hl=True):
 	conf = env.Configure()
 	utils.checks.addDefaultTests(conf)
 

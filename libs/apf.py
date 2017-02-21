@@ -5,7 +5,7 @@
 #
 # @author Sebastian Rettenberger <sebastian.rettenberger@tum.de>
 #
-# @copyright Copyright (c) 2016-2017, Technische Universitaet Muenchen.
+# @copyright Copyright (c) 2017, Technische Universitaet Muenchen.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -34,10 +34,34 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-def find(env, lib, **kw):
-	if env.GetOption('help') or env.GetOption('clean'):
-		return
+import utils.checks
 
-	m = __import__(__name__+'.'+lib)
-	lib_find = getattr(getattr(m, lib), 'find')
-	return lib_find(env, **kw);
+def find(env, required=True, simmetrix=False, zoltan=False):
+	conf = env.Configure()
+	utils.checks.addDefaultTests(conf)
+
+	# Libs required to couple SimModSuite (simmetrix)
+	simmetrixLibs = [('gmi_sim', 'gmi_sim.h'), ('apf_sim', 'apfSIM.h')]
+	# Libs required to couple Zoltan
+	zoltanLibs = [('apf_zoltan', 'apfZoltan.h')]
+	# Other APF libs
+	libs = [('gmi', 'gmi.h'), ('mds', 'apfMDS.h'), ('ma', 'ma.h'),
+		('apf', 'apf.h'), ('pcu', 'PCU.h'),
+		('lion','lionCompress.h'), ('mth','mth.h')]
+
+	if zoltan:
+		libs = zoltanLibs + libs
+	if simmetrix:
+		libs = simmetrixLibs + libs
+
+	for lib in libs:
+		if not conf.CheckLibWithHeader(lib[0], lib[1], 'c++'):
+			if required:
+				utils.checks.error('Could not find %s' % lib[0])
+				env.Exit(1)
+			else:
+				conf.Finish()
+				return False
+
+	conf.Finish()
+	return True

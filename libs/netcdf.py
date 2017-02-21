@@ -5,7 +5,7 @@
 #
 # @author Sebastian Rettenberger <sebastian.rettenberger@tum.de>
 #
-# @copyright Copyright (c) 2016, Technische Universitaet Muenchen.
+# @copyright Copyright (c) 2016-2017, Technische Universitaet Muenchen.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -37,10 +37,7 @@
 import utils.checks
 import utils.pkgconfig
 
-def find(env, required=True, parallel=False, **kw):
-	if env.GetOption('help') or env.GetOption('clean'):
-		return
-
+def find(env, required=True, parallel=False):
 	conf = env.Configure()
 	utils.checks.addDefaultTests(conf)
 
@@ -60,7 +57,7 @@ def find(env, required=True, parallel=False, **kw):
 	else:
 		header = 'netcdf.h'
 
-	if not conf.CheckLibWithHeader(flags['LIBS'][0], header, 'c'):
+	if not conf.CheckLibWithHeader(flags['LIBS'][0], header, 'c', extra_libs=flags['LIBS'][1:]):
 		if required:
 			utils.checks.error('Could not find netCDF')
 			env.Exit(1)

@@ -5,7 +5,7 @@
 #
 # @author Sebastian Rettenberger <sebastian.rettenberger@tum.de>
 #
-# @copyright Copyright (c) 2016, Technische Universitaet Muenchen.
+# @copyright Copyright (c) 2016-2017, Technische Universitaet Muenchen.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -69,11 +69,8 @@ def __CheckOmpVersion(context, version):
 
 	return ret
 
-def find(env, required=True, version='1.0', **kw):
+def find(env, required=True, version='1.0'):
 	"""version: minimal required OpenMP version"""
-
-	if env.GetOption('help') or env.GetOption('clean'):
-		return
 
 	# Work on a copy of env
 	env = env.Clone()
