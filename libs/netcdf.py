@@ -41,7 +41,12 @@ def find(env, required=True, parallel=False):
 	conf = env.Configure()
 	utils.checks.addDefaultTests(conf)
 
-	flags = utils.pkgconfig.parse(conf, 'netcdf')
+	flags = False
+	if parallel:
+		# Required for parallel netcdf on some cray machines
+		flags = utils.pkgconfig.parse(conf, 'netcdf_parallel')
+	if not flags:
+		flags = utils.pkgconfig.parse(conf, 'netcdf')
 	if not flags:
 		if required:
 			utils.checks.error('Could not find netcdf with pkg-config: Make sure pkg-config is installed and PKG_CONFIG_PATH contains netcdf.pc')
