@@ -75,6 +75,11 @@ class Variables(SCons.Variables.Variables):
 			None,
 			_pathListExists,
 			_pathToList))
+		
+	def AddCompilerVariable(self, ccHint='C compiler', cxxHint='C++ compiler'):
+		"""Add option to set compiler executables"""
+		self.AddVariables(SCons.Script.PathVariable('cc', ccHint, None, SCons.Script.PathVariable.PathAccept),
+			SCons.Script.PathVariable('cxx', cxxHint, None, SCons.Script.PathVariable.PathAccept))
 
 	def SetPrefixPathes(self, env, binpath=False, rpath=True, pkgconfigpath=True):
 		"""Configures lib path, include path, bin path, rpath, pkgconfig path from the variable 'prefixPath'"""
@@ -99,6 +104,12 @@ class Variables(SCons.Variables.Variables):
 					if os.path.exists(p)]
 
 			env.PrependENVPath('PKG_CONFIG_PATH', pkgPathes)
+			
+	def SetCompiler(self, env):
+		if 'cc' in env:
+			env['CC'] = env['cc']
+		if 'cxx' in env:
+			env['CXX'] = env['cxx']
 
 	def SetHelpText(self, env):
 		SCons.Script.Help(self.GenerateHelpText(env))
