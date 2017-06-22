@@ -5,7 +5,7 @@
 #
 # @author Sebastian Rettenberger <sebastian.rettenberger@tum.de>
 #
-# @copyright Copyright (c) 2016, Technische Universitaet Muenchen.
+# @copyright Copyright (c) 2016-2017, Technische Universitaet Muenchen.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -88,7 +88,11 @@ def CheckLib(context, library = None, symbol = "main",
 	compiles without flags.
 	"""
 
-	# TODO check for CONF_PREFIX
+	if not header:
+		header = ''
+
+	if 'CONF_PREFIX' in context.env:
+		header = context.env['CONF_PREFIX'] + header
 
 	if library == []:
 		library = [None]
