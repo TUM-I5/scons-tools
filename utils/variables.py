@@ -57,7 +57,7 @@ class Variables(SCons.Variables.Variables):
 	def __init__(self):
 		SCons.Variables.Variables.__init__(self, args=SCons.Script.ARGUMENTS)
 
-	def ParseVariableFile(self, varname='options', description='location of the python file, which contains the build variables'):
+	def ParseVariableFile(self, varname='config', description='location of the python file, which contains the build variables'):
 		"""Load values from an external python file specified in varname"""
 		self.AddVariables(SCons.Script.PathVariable(varname, description, None, SCons.Script.PathVariable.PathIsFile))
 
@@ -75,7 +75,7 @@ class Variables(SCons.Variables.Variables):
 			None,
 			_pathListExists,
 			_pathToList))
-		
+
 	def AddCompilerVariable(self, ccHint='C compiler', cxxHint='C++ compiler'):
 		"""Add option to set compiler executables"""
 		self.AddVariables(SCons.Script.PathVariable('cc', ccHint, None, SCons.Script.PathVariable.PathAccept),
@@ -104,7 +104,7 @@ class Variables(SCons.Variables.Variables):
 					if os.path.exists(p)]
 
 			env.PrependENVPath('PKG_CONFIG_PATH', pkgPathes)
-			
+
 	def SetCompiler(self, env):
 		if 'cc' in env:
 			env['CC'] = env['cc']
