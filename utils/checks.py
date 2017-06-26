@@ -51,6 +51,7 @@ def _libInEnv(libs, env):
 	try:
 		for l in libs:
 			if l in env['LIBS']:
+				env.AppendUnique(delete_existing=1, LIBS=[l]) # Ensure that the library is at the end
 				return l
 	except KeyError:
 		pass
