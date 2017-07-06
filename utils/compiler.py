@@ -5,7 +5,7 @@
 #
 # @author Sebastian Rettenberger <sebastian.rettenberger@tum.de>
 #
-# @copyright Copyright (c) 2016, Technische Universitaet Muenchen.
+# @copyright Copyright (c) 2016-2017, Technische Universitaet Muenchen.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,6 @@ import SCons
 
 def removeUnknownOptions(args):
 	"""Removes compiler options unknown to SCons from the list of arguments"""
-
 	if not SCons.Util.is_List(args):
 		args = args.split()
 
@@ -62,3 +61,17 @@ def removeUnknownOptions(args):
 		del cleaned_args[i]
 
 	return ' '.join(cleaned_args)
+
+def optimizationEnabled(env, default=True, varname='buildType'):
+	"""Optimization enabled in with env[varname]"""
+	if not varname in env:
+		return default
+
+	return env['buildType'] in {'release', 'relWithDebInfo'}
+
+def debugEnabled(env, default=True, varname='buildType'):
+	"""Debug information enabled with env[varname]"""
+	if not varname in env:
+		return default
+
+	return env['buildType'] in {'debug', 'relWithDebInfo'}
