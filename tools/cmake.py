@@ -41,6 +41,9 @@ def parameters(target, source, env):
   else:
     cMakeBuildDir = os.path.split(str(target[0]))[0]
 
+  if not os.path.exists(cMakeBuildDir):
+    os.makedirs(cMakeBuildDir)
+
   makeCmd = 'make'
   if 'MakeCmd' in env.Dictionary().keys():
     makeCmd = env.subst(env['MakeCmd'])
