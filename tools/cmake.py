@@ -5,6 +5,7 @@
 #
 # Parameters:
 #    CMakeProject -- SCons Dir representing the external project. REQUIRED.
+#    CMakeBuildDir -- SCons Dir pointing to the working directory used during build.
 #    CMakeCmd -- The 'cmake' executable to run.
 #                Default: cmake
 #    MakeCmd -- The 'make' executable to run.
@@ -35,7 +36,10 @@ def parameters(target, source, env):
   if 'CMakeOpts' in env.Dictionary().keys():
     cMakeOpts = env.subst(env['CMakeOpts'])
 
-  cMakeBuildDir = os.path.split(str(target[0]))[0]
+  if 'CMakeBuildDir' in env.Dictionary().keys():
+    cMakeBuildDir = os.path.abspath( env.subst(str(env['CMakeBuildDir'])) )
+  else:
+    cMakeBuildDir = os.path.split(str(target[0]))[0]
 
   makeCmd = 'make'
   if 'MakeCmd' in env.Dictionary().keys():
