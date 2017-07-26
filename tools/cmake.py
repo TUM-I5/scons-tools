@@ -12,6 +12,8 @@
 #               Default: make
 #    CMakeOpts -- Options to pass on the CMake command line.
 #                 Default: none
+#    cc        -- C compiler
+#    cxx       -- C++ compiler
 
 import os
 import sys
@@ -32,9 +34,14 @@ def parameters(target, source, env):
   if 'CMakeCmd' in env.Dictionary().keys():
     cMakeCmd = env.subst(env['CMakeCmd'])
 
-  cMakeOpts = None
+  cMakeOpts = []
   if 'CMakeOpts' in env.Dictionary().keys():
     cMakeOpts = env.subst(env['CMakeOpts'])
+  
+  furtherOpts = [('CMAKE_C_COMPILER', 'cc'), ('CMAKE_CXX_COMPILER', 'cxx')]
+  for key,opt in furtherOpts:
+    if opt in env.Dictionary().keys():
+      cMakeOpts.append('-D{}={}'.format(key,env.subst(env[opt])))
 
   if 'CMakeBuildDir' in env.Dictionary().keys():
     cMakeBuildDir = os.path.abspath( env.subst(str(env['CMakeBuildDir'])) )
