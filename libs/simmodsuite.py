@@ -58,6 +58,7 @@ def tryLibPath(env, libPath, mpiWrapper, setRpath):
 		('SimAdvMeshing', 'SimAdvMeshing.h'),
 		('SimMeshing', 'MeshSim.h'),
 		('SimField', 'SimField.h'),
+		('SimExport', 'SimExport.h'),
 		('SimDiscrete', 'SimDiscrete.h'),
 		('SimMeshTools', 'SimMeshTools.h'),
 		(['SimParasolid260', 'SimParasolid270', 'SimParasolid280', 'SimParasolid300'], None),
