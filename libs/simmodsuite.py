@@ -60,7 +60,7 @@ def tryLibPath(env, libPath, mpiWrapper, setRpath):
 		('SimField', 'SimField.h'),
 		('SimDiscrete', 'SimDiscrete.h'),
 		('SimMeshTools', 'SimMeshTools.h'),
-		(['SimParasolid260', 'SimParasolid270', 'SimParasolid280'], None),
+		(['SimParasolid260', 'SimParasolid270', 'SimParasolid280', 'SimParasolid300'], None),
 		('SimPartitionedMesh-mpi', 'SimPartitionedMesh.h'),
 		('SimPartitionWrapper-'+mpiWrapper, None),
 		('SimModel', 'SimModel.h'),
