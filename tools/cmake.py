@@ -65,13 +65,10 @@ def message(target, source, env):
   return 'cd {} && {} {} {} && {} -j {}'.format(cMakeBuildDir, cMakeCmd, ' '.join(cMakeOpts) if cMakeOpts != None else '', cMakeProject, makeCmd, GetOption('num_jobs'))
 
 def printSubprocess(process):
-  while True:
-    nextline = process.stdout.readline()
-    if nextline == '' and process.poll() is not None:
-      break
-    sys.stdout.write(nextline)
-    sys.stdout.flush()
   output = process.communicate()[0]
+  output = output.decode('ascii') if isinstance(output, bytes) else output
+  sys.stdout.write(output)
+  sys.stdout.flush()
 
 def builder(target, source, env):
   """Run cmake and make."""
