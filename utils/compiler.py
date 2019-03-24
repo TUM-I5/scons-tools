@@ -52,7 +52,7 @@ def removeUnknownOptions(args):
 
 
 	cleaned_args = list(args) # copy all
-	for i in xrange(len(args) - 1, -1, -1): # iterate backwards
+	for i in range(len(args) - 1, -1, -1): # iterate backwards
 		if isPrefixOption(args[i]):
 			continue
 

@@ -27,7 +27,7 @@ def parameters(target, source, env):
   if 'CMakeProject' in env.Dictionary().keys():
     cMakeProject = os.path.abspath( env.subst(str(env['CMakeProject'])) )
   else:
-    print "CMake builder requires CMakeProject variable"
+    print("CMake builder requires CMakeProject variable")
     Exit(1)
 
   cMakeCmd = 'cmake'
@@ -80,9 +80,9 @@ def builder(target, source, env):
 
   # Make sure there's a directory to run make in
   if len(cMakeProject) == 0:
-    print 'No path specified'
+    print('No path specified')
   if not os.path.exists(cMakeProject):
-    print 'Path %s not found' % cMakeProject
+    print('Path %s not found' % cMakeProject)
 
   # Build up the command and its arguments in a list
   cmakeAssembled = [ cMakeCmd ]
