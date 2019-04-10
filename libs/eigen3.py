@@ -43,7 +43,8 @@ def find(env, required=True):
 
   flags = utils.pkgconfig.parse(conf, 'eigen3', ['--cflags'])
 
-  utils.pkgconfig.appendPathes(env, flags)
+  if flags:
+    utils.pkgconfig.appendPathes(env, flags)
 
   if not conf.CheckHeader('Eigen/Eigen', language='c++'):
     if required:
