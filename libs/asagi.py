@@ -40,7 +40,7 @@ def find(env, required=True, parallel=False):
   conf = env.Configure()
   utils.checks.addDefaultTests(conf)
 
-  opt = ['--libs', '--static']
+  opt = ['--libs', '--static', '--cflags']
   if parallel:
     flags = utils.pkgconfig.parse(conf, 'asagi', opt)
   else:
