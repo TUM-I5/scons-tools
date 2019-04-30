@@ -37,7 +37,7 @@
 import os
 import SCons
 
-import checks
+from . import checks
 
 # Helper function for the prefix path variable
 def _pathListExists(key, value, env):

@@ -92,7 +92,7 @@ def find(env, required=True, parallel=False, hl=True, api=18):
 
 		if not flags:
 			if required:
-				print 'Could not find h5cc or h5pcc. Make sure the path to the HDF5 library is correct!'
+				print('Could not find h5cc or h5pcc. Make sure the path to the HDF5 library is correct!')
 				env.Exit(1)
 			else:
 				conf.Finish()
