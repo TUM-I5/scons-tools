@@ -58,12 +58,12 @@ def find(env, required=True, parallel=False):
   utils.pkgconfig.appendPathes(env, flags)
   
   if not conf.CheckLibWithHeader(flags['LIBS'][0], 'asagi.h', 'c++', extra_libs=flags['LIBS'][1:]):
-		if required:
-			utils.checks.error('Could not find ASAGI')
-			env.Exit(1)
-		else:
-			conf.Finish()
-			return False
+    if required:
+      utils.checks.error('Could not find ASAGI')
+      env.Exit(1)
+    else:
+      conf.Finish()
+      return False
 
   conf.Finish()
   return True
